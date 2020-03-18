@@ -3,7 +3,7 @@ class Api::V1::RecipesController < ApplicationController
 
     def index
         @recipes = Recipe.all
-        render json: @recipes
+        render json: @recipes.with_attached_image
     end
 
     def create
@@ -20,7 +20,7 @@ class Api::V1::RecipesController < ApplicationController
     end
 
     def update
-        if @recipe.update(recipe_params)
+        if UpdateRecipeService.new(@recipe, recipe_params).call
             render json: @recipe
         else
             render json: @recipe.errors, status: :unprocessable_entity
@@ -34,7 +34,7 @@ class Api::V1::RecipesController < ApplicationController
     end
 
     def recipe_params
-        params.require(:income).permit(:title, :description, :instruction)
+        params.require(:income).permit(:title, :description, :instruction, :image)
     end
 
 end
